@@ -10,9 +10,11 @@
 
 void setSavingsGoal(void)
 {
-    char name[50] = "";
+    char name[50];
     float targetAmount;
     int cancelled = 0;
+
+    name[0] = '\0';
 
     if(goalCount >= MAX_GOALS)
     {
@@ -74,10 +76,12 @@ void setSavingsGoal(void)
 
 void contributeToGoal(void)
 {
-    char name[50] = "";
+    char name[50];
     float amount;
     int found = -1;
     int cancelled = 0;
+
+    name[0] = '\0';
 
     viewSavingsGoals();
 

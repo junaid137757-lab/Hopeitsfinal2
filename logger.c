@@ -8,8 +8,8 @@
 /* Rotate once the log file passes this size. Kept small here
    (50 KB) so rotation is easy to demo/test; bump it up for a
    real deployment. */
-#define LOG_MAX_BYTES  (50U * 1024U)
-#define LOG_PATH_MAX   256
+#define LOG_MAX_BYTES  (50L * 1024L)
+#define LOG_PATH_MAX   256U
 
 /* Guards every static below (logFile, logPath, currentLevel) so
    the logger is safe to call from multiple threads at once - the
@@ -90,7 +90,7 @@ static void rotateIfNeeded(void)
         (void)fseek(logFile, 0, SEEK_END);
         size = ftell(logFile);
 
-        if(size >= (long)LOG_MAX_BYTES)
+        if(size >= LOG_MAX_BYTES)
         {
             char oldPath[LOG_PATH_MAX + 4U];
 

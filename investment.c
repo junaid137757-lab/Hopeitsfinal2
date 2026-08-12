@@ -23,42 +23,42 @@ typedef struct
 static const InvestmentOption investmentOptions[4] =
 {
     {
-        "Mutual Funds",
-        "e.g. Groww, Angel One, 5paisa",
-        "A pooled investment professionally managed across stocks "
-        "and bonds. Value moves with the market.",
-        "3-5 years (long-term)",
-        "~10-12% p.a. (not guaranteed)",
+        {"Mutual Funds"},
+        {"e.g. Groww, Angel One, 5paisa"},
+        {"A pooled investment professionally managed across stocks "
+        "and bonds. Value moves with the market."},
+        {"3-5 years (long-term)"},
+        {"~10-12% p.a. (not guaranteed)"},
         1,
         50.0f
     },
     {
-        "Gold",
-        "e.g. Paytm Gold",
-        "Digital or physical gold, often used as a hedge against "
-        "inflation. Value tracks the market gold price.",
-        "1-3 years",
-        "~7-9% p.a. (not guaranteed)",
+        {"Gold"},
+        {"e.g. Paytm Gold"},
+        {"Digital or physical gold, often used as a hedge against "
+        "inflation. Value tracks the market gold price."},
+        {"1-3 years"},
+        {"~7-9% p.a. (not guaranteed)"},
         1,
         20.0f
     },
     {
-        "Health Insurance",
-        "e.g. PolicyBazaar, Star Health Plan",
-        "A policy that covers medical expenses in exchange for a "
-        "periodic premium. Protects savings from medical emergencies.",
-        "Ongoing (annual renewal)",
-        "N/A - protection, not growth",
+        {"Health Insurance"},
+        {"e.g. PolicyBazaar, Star Health Plan"},
+        {"A policy that covers medical expenses in exchange for a "
+        "periodic premium. Protects savings from medical emergencies."},
+        {"Ongoing (annual renewal)"},
+        {"N/A - protection, not growth"},
         0,
         10.0f
     },
     {
-        "Emergency Fund",
-        "Personal Savings",
-        "Liquid personal savings set aside for unexpected expenses. "
-        "Not invested in the market - available anytime.",
-        "N/A - always liquid",
-        "~3-4% p.a. (savings-equivalent)",
+        {"Emergency Fund"},
+        {"Personal Savings"},
+        {"Liquid personal savings set aside for unexpected expenses. "
+        "Not invested in the market - available anytime."},
+        {"N/A - always liquid"},
+        {"~3-4% p.a. (savings-equivalent)"},
         0,
         20.0f
     }

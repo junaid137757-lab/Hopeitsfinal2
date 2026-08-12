@@ -16,6 +16,10 @@ void notifyBudgetStatus(const char *category, float spent, float limit)
                "(Spent: %.2f / Limit: %.2f)\n",
                category, spent, limit);
     }
+    else
+    {
+        /* Within budget - no notification needed. */
+    }
 }
 
 void notifyGoalAchieved(const char *goalName)

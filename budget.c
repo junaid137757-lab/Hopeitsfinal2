@@ -176,12 +176,14 @@ static void applyBudget(const char *category, float limit)
 
 void setBudget(void)
 {
-    char category[30] = "";
+    char category[30];
     char existingCategories[50][30];
     int existingCount = 0;
     float limit = 0.0f;
     int choice = 0;
     int cancelled = 0;
+
+    category[0] = '\0';
 
     if(budgetCount >= MAX_BUDGETS)
     {

@@ -133,9 +133,11 @@ void editTransaction(void)
 {
     int id = 0;
     int found = -1;
-    char newCategory[30] = "";
+    char newCategory[30];
     float newAmount = 0.0f;
     int cancelled = 0;
+
+    newCategory[0] = '\0';
 
     viewTransactions();
 
@@ -354,8 +356,10 @@ static int printMatchingTransactions(const char *category)
 
 void searchTransactionsByCategory(void)
 {
-    char category[30] = "";
+    char category[30];
     int cancelled = 0;
+
+    category[0] = '\0';
 
     (void)printf("Enter Category to Search (or 0 to cancel): ");
     readLine(category, (int)sizeof(category));
