@@ -23,6 +23,7 @@ void addExpense(void)
     if(cancelled == 0)
     {
         (void)strcpy(t.type, "Expense");
+        t.category[0] = '\0';
 
         (void)printf("Enter Expense Category (or 0 to cancel): ");
         readLine(t.category, (int)sizeof(t.category));

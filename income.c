@@ -22,6 +22,7 @@ void addIncome(void)
     if(cancelled == 0)
     {
         (void)strcpy(t.type, "Income");
+        t.category[0] = '\0';
 
         (void)printf("Enter Income Category (or 0 to cancel): ");
         readLine(t.category, (int)sizeof(t.category));

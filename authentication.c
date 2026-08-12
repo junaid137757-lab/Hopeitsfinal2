@@ -172,51 +172,59 @@ void registerUser(void)
             (void)printf("Error Opening Users File\n");
             cancelled = 1;
         }
-    }
-
-    if(cancelled == 0)
-    {
-        rewind(fp);
-
-        while((usernameTaken == 0) && (fread(&temp, sizeof(User), 1, fp) == 1U))
-        {
-            if(strcmp(temp.username, user.username) == 0)
-            {
-                usernameTaken = 1;
-            }
-        }
-
-        if(usernameTaken != 0)
-        {
-            (void)printf("Username Already Exists!\n");
-        }
-        else if(promptAndHashNewPassword(&user) == 0)
-        {
-            (void)printf("Registration Cancelled.\n");
-        }
         else
         {
-            char filename[60];
-            FILE *userFile;
+            rewind(fp);
 
-            (void)fwrite(&user, sizeof(User), 1, fp);
-
-            (void)snprintf(filename, sizeof(filename), "data/%s_transactions.dat", user.username);
-
-            userFile = fopen(filename, "wb");
-
-            if(userFile != NULL)
+            while((usernameTaken == 0) && (fread(&temp, sizeof(User), 1, fp) == 1U))
             {
-                int count = 0;
-
-                (void)fwrite(&count, sizeof(int), 1, userFile);
-                (void)fclose(userFile);
+                if(strcmp(temp.username, user.username) == 0)
+                {
+                    usernameTaken = 1;
+                }
             }
 
-            (void)printf("Account Created Successfully!\n");
-        }
+            if(usernameTaken != 0)
+            {
+                (void)printf("Username Already Exists!\n");
+            }
+            else if(promptAndHashNewPassword(&user) == 0)
+            {
+                (void)printf("Registration Cancelled.\n");
+            }
+            else
+            {
+                char filename[60];
+                FILE *userFile;
 
-        (void)fclose(fp);
+                /* fp is an update-mode ("ab+") stream and the loop
+                   above just read from it - the C standard requires
+                   a positioning call (fseek/fsetpos/rewind) between
+                   a read and a following write on the same
+                   update-mode stream, or behaviour is undefined.
+                   A zero-offset SEEK_CUR seek satisfies that without
+                   actually moving the position (append mode always
+                   writes at EOF regardless). */
+                (void)fseek(fp, 0, SEEK_CUR);
+                (void)fwrite(&user, sizeof(User), 1, fp);
+
+                (void)snprintf(filename, sizeof(filename), "data/%s_transactions.dat", user.username);
+
+                userFile = fopen(filename, "wb");
+
+                if(userFile != NULL)
+                {
+                    int count = 0;
+
+                    (void)fwrite(&count, sizeof(int), 1, userFile);
+                    (void)fclose(userFile);
+                }
+
+                (void)printf("Account Created Successfully!\n");
+            }
+
+            (void)fclose(fp);
+        }
     }
 }
 

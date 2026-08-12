@@ -212,7 +212,7 @@ void editTransaction(void)
         }
     }
 
-    if(cancelled == 0)
+    if((cancelled == 0) && (found != -1))
     {
         char logMsg[80];
 
@@ -289,7 +289,7 @@ void deleteTransaction(void)
         }
     }
 
-    if(cancelled == 0)
+    if((cancelled == 0) && (found != -1))
     {
         char logMsg[80];
 

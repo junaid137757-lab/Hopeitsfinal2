@@ -10,7 +10,7 @@
 
 void setSavingsGoal(void)
 {
-    char name[50];
+    char name[50] = "";
     float targetAmount;
     int cancelled = 0;
 
@@ -74,7 +74,7 @@ void setSavingsGoal(void)
 
 void contributeToGoal(void)
 {
-    char name[50];
+    char name[50] = "";
     float amount;
     int i;
     int found = -1;
