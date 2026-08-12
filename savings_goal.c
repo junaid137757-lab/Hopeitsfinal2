@@ -76,7 +76,6 @@ void contributeToGoal(void)
 {
     char name[50] = "";
     float amount;
-    int i;
     int found = -1;
     int cancelled = 0;
 
@@ -101,6 +100,8 @@ void contributeToGoal(void)
 
     if(cancelled == 0)
     {
+        int i;
+
         for(i = 0; i < goalCount; i++)
         {
             if(strcmp(goals[i].name, name) == 0)

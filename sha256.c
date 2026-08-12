@@ -223,13 +223,13 @@ int sha256GenerateSaltHex(char outSaltHex[SHA256_SALT_HEX_CHARS])
 
     if(outSaltHex != NULL)
     {
-        uint8_t raw[SHA256_SALT_BYTES];
         FILE *randSource;
 
         randSource = fopen("/dev/urandom", "rb");
 
         if(randSource != NULL)
         {
+            uint8_t raw[SHA256_SALT_BYTES];
             size_t itemsRead;
 
             itemsRead = fread(raw, 1U, SHA256_SALT_BYTES, randSource);

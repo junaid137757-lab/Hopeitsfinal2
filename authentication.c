@@ -155,6 +155,7 @@ void registerUser(void)
     FILE *fp = NULL;
 
     (void)printf("Enter Username (or 0 to cancel): ");
+    user.username[0] = '\0';
     readLine(user.username, (int)sizeof(user.username));
 
     if(strcmp(user.username, "0") == 0)
@@ -171,7 +172,6 @@ void registerUser(void)
         {
             LOG_ERROR_MSG("could not open data/users.dat for registration");
             (void)printf("Error Opening Users File\n");
-            cancelled = 1;
         }
         else
         {
@@ -236,7 +236,6 @@ int loginUser(void)
     char password[30];
     int result = 0;
     int cancelled = 0;
-    int found = 0;
     FILE *fp = fopen("data/users.dat", "rb");
 
     if(fp == NULL)
@@ -273,6 +272,8 @@ int loginUser(void)
 
     if(cancelled == 0)
     {
+        int found = 0;
+
         while((found == 0) && (fread(&user, sizeof(User), 1, fp) == 1U))
         {
             if(strcmp(user.username, username) == 0)
@@ -330,7 +331,6 @@ void forgotPassword(void)
 {
     User user;
     char username[30];
-    int found = 0;
     int cancelled = 0;
     FILE *fp = fopen("data/users.dat", "rb+");
 
@@ -354,6 +354,8 @@ void forgotPassword(void)
 
     if(cancelled == 0)
     {
+        int found = 0;
+
         while((found == 0) && (fread(&user, sizeof(User), 1, fp) == 1U))
         {
             if(strcmp(user.username, username) == 0)
@@ -388,7 +390,6 @@ void changePassword(void)
 {
     User user;
     char oldPassword[30];
-    int found = 0;
     int cancelled = 0;
     FILE *fp = fopen("data/users.dat", "rb+");
 
@@ -399,6 +400,8 @@ void changePassword(void)
 
     if(cancelled == 0)
     {
+        int found = 0;
+
         while((found == 0) && (fread(&user, sizeof(User), 1, fp) == 1U))
         {
             if(strcmp(user.username, currentUser) == 0)

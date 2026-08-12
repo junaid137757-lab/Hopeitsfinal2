@@ -368,17 +368,18 @@ void searchTransactionsByCategory(void)
 
     if(cancelled == 0)
     {
-        static char suggestions[10][30];
-        int suggestionCount = 0;
-        int i;
-        int j;
-        int suggestionChoice = 0;
         int exactMatchFound;
 
         exactMatchFound = printMatchingTransactions(category);
 
         if(exactMatchFound == 0)
         {
+            static char suggestions[10][30];
+            int suggestionCount = 0;
+            int i;
+            int j;
+            int suggestionChoice = 0;
+
             (void)printf("No Transactions Found In This Category\n");
 
             /* No exact match - offer "Did you mean" suggestions based on a
