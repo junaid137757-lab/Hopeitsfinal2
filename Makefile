@@ -24,14 +24,17 @@
 #   make helgrind    -> race detector    -> helgrindreport.txt
 #   make tsan        -> ThreadSanitizer build/run (fast alt to helgrind)
 #   make optimize    -> -O0..-O3 asm/binary size report -> optimization_report.md
-#   make coverage    -> gcov line/branch coverage -> coverage_html/index.html
+#   make coverage    -> gcov line coverage         -> coveragereport.txt + *.gcov
 #   make coverage-noinstall -> same, but via the bundled CUnit-API shim
 #                              (no libcunit1-dev required)
 #   make clean       -> remove all build artifacts and reports
 #
 # Requirements (install what you don't have):
-#   apt-get install libcunit1-dev cppcheck valgrind lcov      # Debian/Ubuntu
-#   yum install cunit-devel cppcheck valgrind lcov            # RHEL/CentOS
+#   apt-get install libcunit1-dev cppcheck valgrind      # Debian/Ubuntu
+#   yum install cunit-devel cppcheck valgrind            # RHEL/CentOS
+# `make coverage`/`coverage-noinstall` need only gcc/gcov, already
+# required for everything else - no extra install, works even on
+# locked-down machines with no package-manager network access.
 # ============================================================
 
 CC       := gcc
@@ -130,44 +133,44 @@ optimize:
 # instrumentation), run it so the .gcda counters get written, then
 # turn the raw .gcno/.gcda pairs into an HTML report with lcov/genhtml.
 # Requires libcunit1-dev (uses -lcunit, same as `make test`).
+# Code coverage: rebuild the test binary with --coverage (adds gcov
+# instrumentation), run it so the .gcda counters get written, then
+# summarize with plain gcov - no lcov/genhtml, no package installs.
+# gcov ships with gcc itself, so this works on locked-down machines
+# with no network/package-manager access.
+# Requires libcunit1-dev (uses -lcunit, same as `make test`).
 coverage:
 	mkdir -p data
-	rm -f *.gcno *.gcda
-	$(CC) $(APP_SRC) $(TEST_SRC) $(COV_FLAGS) $(LDLIBS) -o $(COV_BIN)
+	rm -f *.gcno *.gcda *.gcov *.o
+	$(CC) $(COV_FLAGS) -c $(APP_SRC) $(TEST_SRC)
+	$(CC) $(COV_FLAGS) *.o $(LDLIBS) -o $(COV_BIN)
 	./$(COV_BIN)
-	lcov --capture --directory . --output-file coverage.info \
-	    --rc lcov_branch_coverage=1
-	lcov --remove coverage.info '/usr/*' '*/test_*.c' '*/test_helpers.c' \
-	    --output-file coverage.info --rc lcov_branch_coverage=1
-	genhtml coverage.info --output-directory coverage_html \
-	    --rc lcov_branch_coverage=1
-	@echo "Coverage report: coverage_html/index.html"
-	@echo "=== gcov summary ==="
-	gcov $(APP_SRC) -o . | tee coveragereport.txt
+	@echo "=== gcov summary (per-file % lines executed) ==="
+	gcov $(APP_SRC) | tee coveragereport.txt
+	@echo ""
+	@echo "Per-file .gcov files written to the current directory."
+	@echo "Lines marked ##### were never executed by the test suite."
 
 # Same as `coverage`, but links against the bundled CUnit-API shim
 # instead of -lcunit, for environments without libcunit1-dev.
 coverage-noinstall:
 	mkdir -p data
-	rm -f *.gcno *.gcda
-	$(CC) $(APP_SRC) $(TEST_SRC) mycunit_storage.c $(COV_FLAGS) -o $(COV_BIN)
+	rm -f *.gcno *.gcda *.gcov *.o
+	$(CC) $(COV_FLAGS) -c $(APP_SRC) $(TEST_SRC) mycunit_storage.c
+	$(CC) $(COV_FLAGS) *.o -o $(COV_BIN)
 	./$(COV_BIN)
-	lcov --capture --directory . --output-file coverage.info \
-	    --rc lcov_branch_coverage=1
-	lcov --remove coverage.info '/usr/*' '*/test_*.c' '*/test_helpers.c' \
-	    --output-file coverage.info --rc lcov_branch_coverage=1
-	genhtml coverage.info --output-directory coverage_html \
-	    --rc lcov_branch_coverage=1
-	@echo "Coverage report: coverage_html/index.html"
-	@echo "=== gcov summary ==="
-	gcov $(APP_SRC) -o . | tee coveragereport.txt
+	@echo "=== gcov summary (per-file % lines executed) ==="
+	gcov $(APP_SRC) | tee coveragereport.txt
+	@echo ""
+	@echo "Per-file .gcov files written to the current directory."
+	@echo "Lines marked ##### were never executed by the test suite."
 
 clean:
 	rm -f $(APP_BIN) $(TEST_BIN) $(TSAN_BIN) $(COV_BIN) finance_O0 finance_O1 finance_O2 finance_O3
 	rm -f cppcheckreport.txt misracreport.txt valgrindreport.txt helgrindreport.txt
-	rm -f optimization_report.md coverage.info coveragereport.txt
-	rm -f *.gcno *.gcda *.gcov
-	rm -rf asm coverage_html
+	rm -f optimization_report.md coveragereport.txt
+	rm -f *.gcno *.gcda *.gcov *.o
+	rm -rf asm
 
 help:
 	@sed -n '1,30p' Makefile
