@@ -79,7 +79,66 @@ document:
 the prior revision and needed no further changes here (re-verified
 by rebuilding them individually with the same strict flags).
 
-## Deviations that remain (documented, not "fixed")
+## MISRA-C:2012 fixes applied (this pass)
+
+Based on a `make misra` run performed on the target machine (this
+sandbox still has no `cppcheck`/network access to reproduce it),
+the following genuine violations were fixed in the actual source:
+
+- **`logger.c`** - Rule 10.4/10.8 (essential type mismatches).
+  `LOG_MAX_BYTES` was `(50U * 1024U)` (unsigned) being compared
+  against a `long` via an explicit cast, and `LOG_PATH_MAX` was a
+  plain signed `int` literal added to an unsigned literal (`+ 4U`)
+  for the `oldPath` buffer size. Both macros are now typed
+  consistently (`LOG_MAX_BYTES` as `(50L * 1024L)`, `LOG_PATH_MAX`
+  as `256U`), so no cast is needed and the arithmetic stays in one
+  essential type category throughout.
+- **`notification.c`** - Rule 15.7 (`if`/`else if` chain must end in
+  a final `else`). `notifyBudgetStatus()`'s two-branch chain now has
+  a terminating empty `else`.
+- **`investment.c`** - Rule 9.2 (braces must match the structure of
+  the initialised object). Each `char[]` member of
+  `investmentOptions[]` (an array of structs) is now wrapped in its
+  own braces (e.g. `{"Mutual Funds"}`) instead of relying on the
+  compiler to infer the nesting.
+- **`budget.c`, `savings_goal.c`, `transaction.c`** - Rule 7.4
+  (string literal assigned directly to an object at declaration).
+  `char category[30] = "";`-style declarations (one in `budget.c`,
+  two in `savings_goal.c`, two in `transaction.c`) were split into
+  a plain declaration followed by `category[0] = '\0';`, so the
+  buffer is explicitly zero-terminated rather than literal-
+  initialised.
+
+- **`category_index.c`** - Rule 10.8 (cast of a composite expression to
+  a different essential type). `CATEGORY_INDEX_CAPACITY` was
+  `((unsigned int)(MAX_BUDGETS * 2))` - casting the *result* of the
+  multiplication. This one macro definition was flagged at every
+  line that used it (7 sites: the array declaration, two loops, two
+  hash-modulo lines, and two probe-step lines) since the macro
+  expands inline at each use. Fixed by casting the single object
+  (`MAX_BUDGETS`) to `unsigned int` *before* multiplying by `2U`,
+  so the multiplication itself is already unsigned-int arithmetic
+  with no cast of a composite expression: `(((unsigned int)MAX_BUDGETS) * 2U)`.
+
+Confirmed against a full `make misra` run of all 20 source files:
+every remaining reported item is one of the four deviations below
+(`21.6`, `21.9`, `11.5`, `21.10`), plus three `unusedFunction`
+cppcheck *style* notices (not MISRA) that only appear because
+`make misra` doesn't compile the test files that call
+`logSetLevel`, `sortTransactionsByAmount`, and
+`autosaveSetIntervalSecondsForTesting`.
+
+
+### Not changed - two more deviations, now documented
+
+Two `<time.h>` includes (`logger.c` for timestamped log lines,
+`utility.c` for `getCurrentDate()`) trip Rule 21.10 (avoid the
+time-handling functions of `<time.h>`). Like Rule 21.6/21.9/11.5
+below, this is inherent to features the app actually needs
+(timestamped logs, date-stamped transactions) - removing it would
+mean losing those features, not fixing a defect.
+
+
 
 Unchanged from the previous audit, and still the standard, expected
 deviations for any non-embedded C project that uses the standard
@@ -91,6 +150,9 @@ library:
   amount).
 - **Rule 11.5** (pointer-to-`void*` conversions) - inherent to
   `qsort`'s comparator callback interface.
+- **Rule 21.10** (avoid `<time.h>`) - `logger.c` needs it for
+  timestamped log lines, `utility.c` needs it for
+  `getCurrentDate()`.
 
 ## How this build was verified, and what could NOT be run here
 

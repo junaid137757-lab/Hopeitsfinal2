@@ -7,7 +7,7 @@
    factor stays well under 100%, keeping average probe
    chains short even when every budget slot is in use.
    Still a compile-time constant - no malloc. */
-#define CATEGORY_INDEX_CAPACITY ((unsigned int)(MAX_BUDGETS * 2))
+#define CATEGORY_INDEX_CAPACITY (((unsigned int)MAX_BUDGETS) * 2U)
 
 /* Each slot holds either -1 (empty) or a valid index into
    budgets[]. There is no separate chaining structure - on
