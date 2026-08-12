@@ -151,7 +151,6 @@ void registerUser(void)
     User user;
     User temp;
     int cancelled = 0;
-    int usernameTaken = 0;
     FILE *fp = NULL;
 
     (void)printf("Enter Username (or 0 to cancel): ");
@@ -175,6 +174,8 @@ void registerUser(void)
         }
         else
         {
+            int usernameTaken = 0;
+
             rewind(fp);
 
             while((usernameTaken == 0) && (fread(&temp, sizeof(User), 1, fp) == 1U))
