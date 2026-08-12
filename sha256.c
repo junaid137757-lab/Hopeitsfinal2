@@ -121,10 +121,10 @@ void sha256Init(Sha256Context *ctx)
 
 void sha256Update(Sha256Context *ctx, const uint8_t *data, size_t length)
 {
-    size_t i;
-
     if((ctx != NULL) && (data != NULL))
     {
+        size_t i;
+
         for(i = 0U; i < length; i++)
         {
             ctx->buffer[ctx->bufferLength] = data[i];
@@ -142,11 +142,11 @@ void sha256Update(Sha256Context *ctx, const uint8_t *data, size_t length)
 
 void sha256Final(Sha256Context *ctx, uint8_t digest[SHA256_DIGEST_BYTES])
 {
-    uint32_t i;
-    uint64_t totalBits;
-
     if((ctx != NULL) && (digest != NULL))
     {
+        uint32_t i;
+        uint64_t totalBits;
+
         totalBits = ctx->bitLength + ((uint64_t)ctx->bufferLength * 8U);
 
         ctx->buffer[ctx->bufferLength] = 0x80U;
@@ -204,10 +204,11 @@ static void bytesToHex(const uint8_t *bytes, size_t byteCount, char *outHex)
 void sha256HashSalted(const char *saltHex, const char *password, char outHex[SHA256_HEX_CHARS])
 {
     Sha256Context ctx;
-    uint8_t digest[SHA256_DIGEST_BYTES];
 
     if((saltHex != NULL) && (password != NULL) && (outHex != NULL))
     {
+        uint8_t digest[SHA256_DIGEST_BYTES];
+
         sha256Init(&ctx);
         sha256Update(&ctx, (const uint8_t *)saltHex, strlen(saltHex));
         sha256Update(&ctx, (const uint8_t *)password, strlen(password));
@@ -219,16 +220,18 @@ void sha256HashSalted(const char *saltHex, const char *password, char outHex[SHA
 int sha256GenerateSaltHex(char outSaltHex[SHA256_SALT_HEX_CHARS])
 {
     int result = 0;
-    uint8_t raw[SHA256_SALT_BYTES];
-    FILE *randSource;
-    size_t itemsRead;
 
     if(outSaltHex != NULL)
     {
+        uint8_t raw[SHA256_SALT_BYTES];
+        FILE *randSource;
+
         randSource = fopen("/dev/urandom", "rb");
 
         if(randSource != NULL)
         {
+            size_t itemsRead;
+
             itemsRead = fread(raw, 1U, SHA256_SALT_BYTES, randSource);
             (void)fclose(randSource);
 
@@ -246,10 +249,6 @@ int sha256GenerateSaltHex(char outSaltHex[SHA256_SALT_HEX_CHARS])
 int sha256ConstantTimeEqual(const char *hexA, const char *hexB)
 {
     int result;
-    size_t i;
-    unsigned char diff = 0U;
-    size_t lenA;
-    size_t lenB;
 
     if((hexA == NULL) || (hexB == NULL))
     {
@@ -257,8 +256,8 @@ int sha256ConstantTimeEqual(const char *hexA, const char *hexB)
     }
     else
     {
-        lenA = strlen(hexA);
-        lenB = strlen(hexB);
+        size_t lenA = strlen(hexA);
+        size_t lenB = strlen(hexB);
 
         if(lenA != lenB)
         {
@@ -266,6 +265,9 @@ int sha256ConstantTimeEqual(const char *hexA, const char *hexB)
         }
         else
         {
+            size_t i;
+            unsigned char diff = 0U;
+
             for(i = 0U; i < lenA; i++)
             {
                 diff |= (unsigned char)((unsigned char)hexA[i] ^ (unsigned char)hexB[i]);

@@ -135,7 +135,7 @@ void contributeToGoal(void)
         }
     }
 
-    if(cancelled == 0)
+    if((cancelled == 0) && (found != -1))
     {
         char logMsg[80];
 
@@ -158,14 +158,14 @@ void contributeToGoal(void)
 
 void viewSavingsGoals(void)
 {
-    int i;
-
     if(goalCount == 0)
     {
         (void)printf("No Savings Goals Set\n");
     }
     else
     {
+        int i;
+
         (void)printf("\n--------------------------------------------------------------------------------\n");
         (void)printf("%-20s%-14s%-14s%s\n", "GOAL", "TARGET", "SAVED", "PROGRESS");
         (void)printf("--------------------------------------------------------------------------------\n");

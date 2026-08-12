@@ -221,9 +221,6 @@ static void viewInvestmentCategories(void)
 static void getInvestmentRecommendation(void)
 {
     float amount;
-    int i;
-    int hasMarketLinked = 0;
-    char shareStr[16];
     int cancelled = 0;
 
     (void)printf("Enter Amount to Invest (or -1 to cancel): ");
@@ -249,6 +246,10 @@ static void getInvestmentRecommendation(void)
 
     if(cancelled == 0)
     {
+        int i;
+        int hasMarketLinked = 0;
+        char shareStr[16];
+
         (void)printf("\n========================================\n");
         (void)printf(" Suggested Allocation for %.2f\n", (double)amount);
         (void)printf("========================================\n");

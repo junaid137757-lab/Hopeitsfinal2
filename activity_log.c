@@ -37,10 +37,10 @@ static int initialized = 0;
 
 static void initPoolIfNeeded(void)
 {
-    int i;
-
     if(initialized == 0)
     {
+        int i;
+
         for(i = 0; i < (ACTIVITY_LOG_CAPACITY - 1); i++)
         {
             pool[i].next = i + 1;
@@ -115,8 +115,6 @@ void logActivity(const char *message)
 
 void printActivityLog(void)
 {
-    int cursor;
-
     initPoolIfNeeded();
 
     if(head == -1)
@@ -125,6 +123,8 @@ void printActivityLog(void)
     }
     else
     {
+        int cursor;
+
         (void)printf("\n--------------------------------------------------------------------\n");
         (void)printf("RECENT ACTIVITY (most recent first)\n");
         (void)printf("--------------------------------------------------------------------\n");

@@ -15,12 +15,11 @@ void getCurrentDate(char *buffer)
 
 void clearInputBuffer(void)
 {
-    int c;
     int done = 0;
 
     while(done == 0)
     {
-        c = getchar();
+        int c = getchar();
 
         if((c == (int)'\n') || (c == EOF))
         {

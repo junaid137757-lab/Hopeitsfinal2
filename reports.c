@@ -7,19 +7,19 @@
 
 void categoryWiseReport(void)
 {
-    static char seen[MAX][30];
-    static float totals[MAX];
-    int seenCount = 0;
-    int i;
-    int j;
-    float remainingBalance = 0.0f;
-
     if(transactionCount == 0)
     {
         (void)printf("No Transactions Available\n");
     }
     else
     {
+        static char seen[MAX][30];
+        static float totals[MAX];
+        int seenCount = 0;
+        int i;
+        int j;
+        float remainingBalance = 0.0f;
+
         sortTransactionsByDate();
 
         for(i = 0; i < transactionCount; i++)
@@ -68,19 +68,19 @@ void categoryWiseReport(void)
 
 void monthlyReport(void)
 {
-    static char months[MAX][8];
-    static float income[MAX];
-    static float expense[MAX];
-    int monthCount = 0;
-    int i;
-    int j;
-
     if(transactionCount == 0)
     {
         (void)printf("No Transactions Available\n");
     }
     else
     {
+        static char months[MAX][8];
+        static float income[MAX];
+        static float expense[MAX];
+        int monthCount = 0;
+        int i;
+        int j;
+
         sortTransactionsByDate();
 
         for(i = 0; i < transactionCount; i++)

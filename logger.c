@@ -72,11 +72,10 @@ static void currentTimestamp(char *buffer, size_t size)
    if you want more history. Caller must hold logMutex. */
 static void rotateIfNeeded(void)
 {
-    long size;
-    char oldPath[LOG_PATH_MAX + 4U];
-
     if(logFile != NULL)
     {
+        long size;
+
         (void)fflush(logFile);
 
         /* An explicit seek-to-end is required here, not just ftell().
@@ -93,6 +92,8 @@ static void rotateIfNeeded(void)
 
         if(size >= (long)LOG_MAX_BYTES)
         {
+            char oldPath[LOG_PATH_MAX + 4U];
+
             (void)fclose(logFile);
 
             (void)snprintf(oldPath, sizeof(oldPath), "%s.old", logPath);
@@ -108,10 +109,10 @@ static void rotateIfNeeded(void)
 static void logMessageImpl(LogLevel level, const char *file, int line,
                             const char *func, const char *message)
 {
-    char timestamp[20];
-
     if((logFile != NULL) && (level >= currentLevel))
     {
+        char timestamp[20];
+
         rotateIfNeeded();
 
         currentTimestamp(timestamp, sizeof(timestamp));

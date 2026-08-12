@@ -11,7 +11,6 @@ void generateRecommendations(void)
     float expense = 0.0f;
     int i;
     int hasEmergencyFund = 0;
-    int printedAny = 0;
 
     for(i = 0; i < transactionCount; i++)
     {
@@ -45,6 +44,8 @@ void generateRecommendations(void)
     }
     else
     {
+        int printedAny = 0;
+
         if(expense > income)
         {
             (void)printf("- Your expenses currently exceed your income. Consider\n");

@@ -38,13 +38,8 @@
    need it. */
 static int isPasswordValid(const char *password)
 {
-    int hasUpper = 0;
-    int hasLower = 0;
-    int hasDigit = 0;
-    int hasSymbol = 0;
     int result;
     size_t len = strlen(password);
-    size_t i;
 
     if(len < 8U)
     {
@@ -52,6 +47,12 @@ static int isPasswordValid(const char *password)
     }
     else
     {
+        int hasUpper = 0;
+        int hasLower = 0;
+        int hasDigit = 0;
+        int hasSymbol = 0;
+        size_t i;
+
         for(i = 0U; i < len; i++)
         {
             unsigned char c = (unsigned char)password[i];

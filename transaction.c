@@ -91,15 +91,15 @@ void sortTransactionsByAmount(void)
 
 void viewTransactions(void)
 {
-    int i;
-    float balance = 0.0f;
-
     if(transactionCount == 0)
     {
         (void)printf("No Transactions Available\n");
     }
     else
     {
+        int i;
+        float balance = 0.0f;
+
         (void)printf("\n--------------------------------------------------------------------------------\n");
         (void)printf("%-5s%-10s%-16s%-12s%-14s%-12s\n", "ID", "TYPE", "CATEGORY", "AMOUNT", "DATE", "BALANCE");
         (void)printf("--------------------------------------------------------------------------------\n");
@@ -132,7 +132,6 @@ void viewTransactions(void)
 void editTransaction(void)
 {
     int id = 0;
-    int i;
     int found = -1;
     char newCategory[30] = "";
     float newAmount = 0.0f;
@@ -166,6 +165,8 @@ void editTransaction(void)
 
     if(cancelled == 0)
     {
+        int i;
+
         for(i = 0; i < transactionCount; i++)
         {
             if(transactions[i].id == id)
@@ -237,7 +238,6 @@ void editTransaction(void)
 void deleteTransaction(void)
 {
     int id = 0;
-    int i;
     int found = -1;
     int cancelled = 0;
 
@@ -269,6 +269,8 @@ void deleteTransaction(void)
 
     if(cancelled == 0)
     {
+        int i;
+
         for(i = 0; i < transactionCount; i++)
         {
             if(transactions[i].id == id)
@@ -298,9 +300,13 @@ void deleteTransaction(void)
 
         (void)pthread_mutex_lock(&dataMutex);
 
-        for(i = found; i < (transactionCount - 1); i++)
         {
-            transactions[i] = transactions[i + 1];
+            int i;
+
+            for(i = found; i < (transactionCount - 1); i++)
+            {
+                transactions[i] = transactions[i + 1];
+            }
         }
 
         transactionCount--;
@@ -349,13 +355,7 @@ static int printMatchingTransactions(const char *category)
 void searchTransactionsByCategory(void)
 {
     char category[30] = "";
-    static char suggestions[10][30];
-    int suggestionCount = 0;
-    int i;
-    int j;
-    int suggestionChoice = 0;
     int cancelled = 0;
-    int exactMatchFound;
 
     (void)printf("Enter Category to Search (or 0 to cancel): ");
     readLine(category, (int)sizeof(category));
@@ -368,6 +368,13 @@ void searchTransactionsByCategory(void)
 
     if(cancelled == 0)
     {
+        static char suggestions[10][30];
+        int suggestionCount = 0;
+        int i;
+        int j;
+        int suggestionChoice = 0;
+        int exactMatchFound;
+
         exactMatchFound = printMatchingTransactions(category);
 
         if(exactMatchFound == 0)
