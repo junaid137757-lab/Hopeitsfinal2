@@ -10,7 +10,7 @@
 # Quick start:
 #   make            -> build the app only            (./finance)
 #   make check       -> tests + cppcheck + MISRA + valgrind + helgrind
-#   make all         -> check + optimization report, in one command
+#   make all         -> check + optimization report + coverage, in one command
 #
 # Individual pieces:
 #   make app         -> build ./finance
@@ -24,17 +24,26 @@
 #   make helgrind    -> race detector    -> helgrindreport.txt
 #   make tsan        -> ThreadSanitizer build/run (fast alt to helgrind)
 #   make optimize    -> -O0..-O3 asm/binary size report -> optimization_report.md
+#   make coverage    -> gcov line/branch coverage -> coverage_html/index.html
+#   make coverage-noinstall -> same, but via the bundled CUnit-API shim
+#                              (no libcunit1-dev required)
 #   make clean       -> remove all build artifacts and reports
 #
 # Requirements (install what you don't have):
-#   apt-get install libcunit1-dev cppcheck valgrind      # Debian/Ubuntu
-#   yum install cunit-devel cppcheck valgrind            # RHEL/CentOS
+#   apt-get install libcunit1-dev cppcheck valgrind lcov      # Debian/Ubuntu
+#   yum install cunit-devel cppcheck valgrind lcov            # RHEL/CentOS
 # ============================================================
 
 CC       := gcc
 CFLAGS   := -Wall -Wextra -pthread
 CFLAGS_G := -Wall -Wextra -pthread -g
 LDLIBS   := -lcunit
+
+# Coverage build: instrument with gcov, keep -O0 so line numbers in
+# the report map 1:1 onto the source (optimization can merge/reorder
+# lines and makes gcov output misleading).
+COV_FLAGS := --coverage -O0 -Wall -Wextra -pthread -g
+COV_BIN   := run_tests_cov
 
 APP_SRC := globals.c utility.c notification.c authentication.c persistence.c \
            income.c expense.c transaction.c budget.c savings_goal.c dashboard.c \
@@ -51,10 +60,10 @@ APP_BIN   := finance
 TEST_BIN  := run_tests
 TSAN_BIN  := run_tests_tsan
 
-.PHONY: all app test check cppcheck misra valgrind helgrind tsan optimize clean help
+.PHONY: all app test check cppcheck misra valgrind helgrind tsan optimize coverage coverage-noinstall clean help
 
-# Default target: just build the interactive app.
-all: check optimize
+# Default target: full verification pass.
+all: check optimize coverage
 
 app: $(APP_BIN)
 
@@ -117,11 +126,48 @@ tsan:
 optimize:
 	bash optimization_report.sh
 
+# Code coverage: rebuild the test binary with --coverage (adds gcov
+# instrumentation), run it so the .gcda counters get written, then
+# turn the raw .gcno/.gcda pairs into an HTML report with lcov/genhtml.
+# Requires libcunit1-dev (uses -lcunit, same as `make test`).
+coverage:
+	mkdir -p data
+	rm -f *.gcno *.gcda
+	$(CC) $(APP_SRC) $(TEST_SRC) $(COV_FLAGS) $(LDLIBS) -o $(COV_BIN)
+	./$(COV_BIN)
+	lcov --capture --directory . --output-file coverage.info \
+	    --rc lcov_branch_coverage=1
+	lcov --remove coverage.info '/usr/*' '*/test_*.c' '*/test_helpers.c' \
+	    --output-file coverage.info --rc lcov_branch_coverage=1
+	genhtml coverage.info --output-directory coverage_html \
+	    --rc lcov_branch_coverage=1
+	@echo "Coverage report: coverage_html/index.html"
+	@echo "=== gcov summary ==="
+	gcov $(APP_SRC) -o . | tee coveragereport.txt
+
+# Same as `coverage`, but links against the bundled CUnit-API shim
+# instead of -lcunit, for environments without libcunit1-dev.
+coverage-noinstall:
+	mkdir -p data
+	rm -f *.gcno *.gcda
+	$(CC) $(APP_SRC) $(TEST_SRC) mycunit_storage.c $(COV_FLAGS) -o $(COV_BIN)
+	./$(COV_BIN)
+	lcov --capture --directory . --output-file coverage.info \
+	    --rc lcov_branch_coverage=1
+	lcov --remove coverage.info '/usr/*' '*/test_*.c' '*/test_helpers.c' \
+	    --output-file coverage.info --rc lcov_branch_coverage=1
+	genhtml coverage.info --output-directory coverage_html \
+	    --rc lcov_branch_coverage=1
+	@echo "Coverage report: coverage_html/index.html"
+	@echo "=== gcov summary ==="
+	gcov $(APP_SRC) -o . | tee coveragereport.txt
+
 clean:
-	rm -f $(APP_BIN) $(TEST_BIN) $(TSAN_BIN) finance_O0 finance_O1 finance_O2 finance_O3
+	rm -f $(APP_BIN) $(TEST_BIN) $(TSAN_BIN) $(COV_BIN) finance_O0 finance_O1 finance_O2 finance_O3
 	rm -f cppcheckreport.txt misracreport.txt valgrindreport.txt helgrindreport.txt
-	rm -f optimization_report.md
-	rm -rf asm
+	rm -f optimization_report.md coverage.info coveragereport.txt
+	rm -f *.gcno *.gcda *.gcov
+	rm -rf asm coverage_html
 
 help:
 	@sed -n '1,30p' Makefile
